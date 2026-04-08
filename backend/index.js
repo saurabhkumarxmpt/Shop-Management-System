@@ -1,12 +1,13 @@
 require('dotenv').config();
 
-const express=require("mongoose");
-const PORT=process.env.PORT;
+const express=require("express");
+const PORT=5001;
+const database=require('./config/db');
 
 const app=express();
 
 app.use(express.json());
-
+database();
 
 app.get("/",(req,res)=>{
     return res.json({message:'this is the home page'});
