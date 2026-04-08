@@ -1,5 +1,6 @@
 const User=require("../models/users");
 const bcrypt=require('bcrypt');
+const jwt=require('jsonwebtoken');
 
 exports.register=async(req,res)=>{
     try{
@@ -50,5 +51,63 @@ exports.register=async(req,res)=>{
     }catch(err){
             res.status(500).json({message:'something went wrong'});
             console.error(err.message);
+    }
+}
+
+exports.login=async(req,res)=>{
+    try{
+        const{email,password}=req.body;
+
+        //Basic validation
+        if(!email || !password){
+            return res.status(400).json({
+                success:false,
+                message:'All fields are required'
+            });
+        }
+
+        //Check if user already exists
+        const user=await User.findOne({email});
+
+        if(!user){
+            return res.status(400).json({
+                sucess:false,
+                message:'email or user not found'
+            });
+        }
+
+        //Check the password
+        const isMatch=await bcrypt.compare(password,user.password);
+
+        if(!isMatch){
+            return res.status(400).json({
+                success:false,
+                message:"password not matched"
+            });
+        }
+
+
+        //ganrate the token
+        const token=jwt.sign(
+            {id:user._id},
+            process.env.SECRET_KEY,
+            {expiresIn: "7d"}
+        );
+
+
+        //send message
+        res.status(200).json({
+            success:true,
+            message:'Login successful',
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                shopName: user.shopName
+            }
+        })
+    }catch(err){
+        res.status(500).json({message:err.message});
     }
 }
