@@ -43,8 +43,7 @@ exports.createProduct=async(req,res)=>{
 
         return res.status(201).json({
             success:true,
-            message:'product created successfully',
-            data:createProduct
+            message:'product created successfully'
         })
     }catch(err){
         return res.status(500).json({
@@ -52,5 +51,11 @@ exports.createProduct=async(req,res)=>{
             message: "Server Error",
             error: err.message
         });
+    }
+}
+
+exports.getAllProducts=async(req,res)=>{
+    try{
+        
     }
 }
